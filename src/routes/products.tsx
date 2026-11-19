@@ -8,12 +8,12 @@ import { FilterGroup } from "@/components/FilterGroup";
 import { filterProducts, products, type SortOrder } from "@/data/products";
 
 interface ProductsSearch {
-  q?: string;
+  q?: string | undefined;
 }
 
 export const Route = createFileRoute("/products")({
   validateSearch: (s: Record<string, unknown>): ProductsSearch => ({
-    q: typeof s.q === "string" && s.q ? s.q : undefined,
+    q: typeof s["q"] === "string" && s["q"] ? s["q"] : undefined,
   }),
   head: () => ({
     meta: [

@@ -4,10 +4,10 @@ import { ArrowRight } from "lucide-react";
 
 interface SectionProps {
   title: string;
-  titleAlign?: "left" | "center";
+  titleAlign?: "left" | "center" | undefined;
   link?: { text: string; href: string };
   children: ReactNode;
-  className?: string;
+  className?: string | undefined;
 }
 
 export function Section({ title, titleAlign = "left", link, children, className = "" }: SectionProps) {

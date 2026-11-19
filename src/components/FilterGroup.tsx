@@ -2,8 +2,8 @@ interface FilterGroupProps {
   title: string;
   inputType: "checkbox" | "radio";
   options: { text: string; value?: string }[];
-  selected?: string[];
-  onChange?: (values: string[]) => void;
+  selected?: string[] | undefined;
+  onChange?: (values: string[]) => void | undefined;
 }
 
 export function FilterGroup({ title, inputType, options, selected = [], onChange }: FilterGroupProps) {

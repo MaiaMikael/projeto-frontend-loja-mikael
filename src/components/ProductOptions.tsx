@@ -2,7 +2,7 @@ import { useState } from "react";
 
 interface ProductOptionsProps {
   options: string[];
-  radius?: string;
+  radius?: string | undefined;
   shape: "square" | "circle";
   type: "text" | "color";
 }

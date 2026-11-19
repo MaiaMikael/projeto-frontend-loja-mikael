@@ -28,3 +28,5 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Store components live in src/components and product data/filter logic in src/data/products.ts; pages are TanStack routes wrapping content in `<Layout>` (the brief's src/pages maps to src/routes because the router is file-based).

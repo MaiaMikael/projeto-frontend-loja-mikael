@@ -8,9 +8,9 @@ interface BuyBoxProps {
   stars: number;
   rating: number;
   price: number;
-  priceDiscount?: number;
+  priceDiscount?: number | undefined;
   description: string;
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 export function BuyBox({ name, reference, stars, rating, price, priceDiscount, description, children }: BuyBoxProps) {

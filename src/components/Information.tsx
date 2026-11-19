@@ -1,6 +1,6 @@
 interface InformationItem {
   text: string;
-  link?: string;
+  link?: string | undefined;
 }
 
 export function Information({ title, informations }: { title: string; informations: InformationItem[] }) {

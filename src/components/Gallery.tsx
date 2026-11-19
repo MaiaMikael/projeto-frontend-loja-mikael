@@ -4,11 +4,11 @@ import arrowRight from "@/assets/icons/arrow-right.svg";
 
 interface GalleryProps {
   images: { src: string }[];
-  width?: number | string;
-  height?: number | string;
-  radius?: string;
-  showThumbs?: boolean;
-  className?: string;
+  width?: number | string | undefined;
+  height?: number | string | undefined;
+  radius?: string | undefined;
+  showThumbs?: boolean | undefined;
+  className?: string | undefined;
 }
 
 const px = (v: number | string) => (typeof v === "number" ? v : parseFloat(v));

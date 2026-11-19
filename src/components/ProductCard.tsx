@@ -2,12 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { formatPrice } from "@/data/products";
 
 export interface ProductCardProps {
-  id?: string;
+  id?: string | undefined;
   name: string;
   image: string;
   price: number;
-  priceDiscount?: number;
-  category?: string;
+  priceDiscount?: number | undefined;
+  category?: string | undefined;
 }
 
 export function ProductCard({ id, name, image, price, priceDiscount, category }: ProductCardProps) {
@@ -24,7 +24,7 @@ export function ProductCard({ id, name, image, price, priceDiscount, category }:
       </div>
       {category && <p className="mt-3 text-xs font-bold text-light-gray">{category}</p>}
       <h3 className="mt-1 text-base text-dark-gray-2 lg:text-2xl">{name}</h3>
-      <div className="mt-1 flex items-baseline gap-2">
+      <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
         {priceDiscount ? (
           <>
             <span className="text-base text-light-gray line-through lg:text-2xl">{formatPrice(price)}</span>

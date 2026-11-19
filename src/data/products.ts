@@ -6,7 +6,7 @@ export interface Product {
   gender: "Masculino" | "Feminino" | "Unisex";
   image: string;
   price: number;
-  priceDiscount?: number;
+  priceDiscount?: number | undefined;
   reference: string;
   stars: number;
   rating: number;
@@ -53,11 +53,11 @@ export const effectivePrice = (p: Pick<Product, "price" | "priceDiscount">) => p
 export type SortOrder = "menor" | "maior";
 
 export interface ProductFilters {
-  q?: string;
-  brands?: string[];
-  categories?: string[];
-  genders?: string[];
-  sort?: SortOrder;
+  q?: string | undefined;
+  brands?: string[] | undefined;
+  categories?: string[] | undefined;
+  genders?: string[] | undefined;
+  sort?: SortOrder | undefined;
 }
 
 export function filterProducts(list: Product[], f: ProductFilters): Product[] {

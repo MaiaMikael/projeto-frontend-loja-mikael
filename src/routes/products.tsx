@@ -69,7 +69,7 @@ function ProductListingPage() {
             <button
               type="button"
               onClick={() => setShowFilters((s) => !s)}
-              className="inline-flex items-center gap-2 self-start rounded-sm bg-primary px-4 py-2 text-sm font-bold text-primary-foreground lg:hidden"
+              className="inline-flex items-center gap-2 self-start rounded-sm bg-rubi px-4 py-2 text-sm font-bold text-primary-foreground lg:hidden"
             >
               <SlidersHorizontal className="size-4" /> Filtrar
             </button>

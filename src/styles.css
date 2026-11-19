@@ -44,11 +44,13 @@
 
 :root {
   --radius: 0.25rem;
-  --primary: oklch(0.555 0.208 358.6);
+  --primary: #d90429;
   --primary-foreground: oklch(1 0 0);
+  --gradient-rubi: linear-gradient(135deg, #8e0e2a 0%, #d90429 100%);
+  --gradient-rubi-deep: linear-gradient(135deg, #6b0a1f 0%, #b01030 100%);
   --secondary: oklch(0.797 0.085 283.6);
   --secondary-foreground: oklch(0.239 0 0);
-  --tertiary: oklch(0.456 0.168 358.2);
+  --tertiary: #8e0e2a;
   --destructive: oklch(0.639 0.207 13.5);
   --destructive-foreground: oklch(1 0 0);
   --success: oklch(0.75 0.161 150.5);
@@ -94,4 +96,12 @@
   margin-inline: auto;
   padding-inline: 1rem;
   @media (min-width: 1024px) { padding-inline: 6.25rem; }
+}
+
+@utility bg-rubi {
+  background-image: var(--gradient-rubi);
+}
+
+@utility bg-rubi-deep {
+  background-image: var(--gradient-rubi-deep);
 }

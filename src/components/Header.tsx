@@ -54,7 +54,7 @@ export function Header() {
           </a>
           <a
             href="#"
-            className="hidden h-10 w-[114px] items-center justify-center rounded-sm bg-primary text-sm font-bold text-primary-foreground transition-colors hover:bg-tertiary lg:inline-flex"
+            className="hidden h-10 w-[114px] items-center justify-center rounded-sm bg-rubi text-sm font-bold text-primary-foreground transition-colors hover:bg-rubi-deep lg:inline-flex"
           >
             Entrar
           </a>
@@ -101,7 +101,7 @@ export function Header() {
             </li>
           ))}
           <li className="flex gap-4 border-t pt-4 lg:hidden">
-            <a href="#" className="inline-flex h-10 w-[114px] items-center justify-center rounded-sm bg-primary text-sm font-bold text-primary-foreground">
+            <a href="#" className="inline-flex h-10 w-[114px] items-center justify-center rounded-sm bg-rubi text-sm font-bold text-primary-foreground">
               Entrar
             </a>
             <a href="#" className="self-center text-base text-dark-gray-2 underline">Cadastre-se</a>

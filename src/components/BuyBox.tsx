@@ -44,7 +44,7 @@ export function BuyBox({ name, reference, stars, rating, price, priceDiscount, d
       {children}
       <button
         type="button"
-        className="mt-2 h-12 w-full rounded-lg bg-warning text-base font-bold text-primary-foreground transition hover:brightness-95 sm:w-[220px]"
+        className="mt-2 h-12 w-full rounded-lg bg-rubi text-base font-bold text-primary-foreground transition hover:bg-rubi-deep sm:w-[220px]"
       >
         COMPRAR
       </button>

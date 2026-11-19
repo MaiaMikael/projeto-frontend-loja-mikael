@@ -16,14 +16,14 @@ export const Route = createFileRoute("/product/$id")({
   head: ({ loaderData }) => ({
     meta: loaderData
       ? [
-          { title: `${loaderData.product.name} | Digital Store` },
+          { title: `${loaderData.product.name} | Loja Mikael Maia` },
           { name: "description", content: loaderData.product.description.slice(0, 150) },
-          { property: "og:title", content: `${loaderData.product.name} | Digital Store` },
+          { property: "og:title", content: `${loaderData.product.name} | Loja Mikael Maia` },
           { property: "og:description", content: loaderData.product.description.slice(0, 150) },
           { property: "og:type", content: "product" },
           { name: "twitter:card", content: "summary_large_image" },
         ]
-      : [{ title: "Produto indisponível | Digital Store" }, { name: "robots", content: "noindex" }],
+      : [{ title: "Produto indisponível | Loja Mikael Maia" }, { name: "robots", content: "noindex" }],
   }),
   notFoundComponent: () => (
     <Layout>

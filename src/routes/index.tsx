@@ -8,9 +8,9 @@ import { homeSlides, products } from "@/data/products";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Digital Store | Tênis, roupas e acessórios" },
-      { name: "description", content: "Ofertas personalizadas, coleções em destaque e os produtos em alta da Digital Store." },
-      { property: "og:title", content: "Digital Store | Tênis, roupas e acessórios" },
+      { title: "Loja Mikael Maia | Tênis, roupas e acessórios" },
+      { name: "description", content: "Ofertas personalizadas, coleções em destaque e os produtos em alta da Loja Mikael Maia." },
+      { property: "og:title", content: "Loja Mikael Maia | Tênis, roupas e acessórios" },
       { property: "og:description", content: "Ofertas personalizadas, coleções em destaque e os produtos em alta." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

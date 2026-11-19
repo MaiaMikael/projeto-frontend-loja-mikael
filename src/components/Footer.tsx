@@ -30,7 +30,7 @@ export function Footer() {
         <Information
           title="Informação"
           informations={[
-            { text: "Sobre Drip Store", link: "#" },
+            { text: "Sobre a Loja Mikael Maia", link: "#" },
             { text: "Segurança", link: "#" },
             { text: "Wishlist", link: "#" },
             { text: "Blog", link: "#" },
@@ -58,7 +58,7 @@ export function Footer() {
       </div>
       <div className="container-store">
         <hr className="border-dark-gray-2" />
-        <p className="py-8 text-center text-xs">© {new Date().getFullYear()} Digital Store</p>
+        <p className="py-8 text-center text-xs">© {new Date().getFullYear()} Loja Mikael Maia · Projeto Front End FIEC</p>
       </div>
     </footer>
   );

@@ -17,10 +17,10 @@ export const Route = createFileRoute("/products")({
   }),
   head: () => ({
     meta: [
-      { title: "Produtos | Digital Store" },
-      { name: "description", content: "Veja todos os produtos da Digital Store, filtre por marca, categoria e gênero." },
-      { property: "og:title", content: "Produtos | Digital Store" },
-      { property: "og:description", content: "Filtre e ordene todos os produtos da Digital Store." },
+      { title: "Produtos | Loja Mikael Maia" },
+      { name: "description", content: "Veja todos os produtos da Loja Mikael Maia, filtre por marca, categoria e gênero." },
+      { property: "og:title", content: "Produtos | Loja Mikael Maia" },
+      { property: "og:description", content: "Filtre e ordene todos os produtos da Loja Mikael Maia." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

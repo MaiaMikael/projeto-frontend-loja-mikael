@@ -4,10 +4,10 @@ import { Layout } from "@/components/Layout";
 export const Route = createFileRoute("/pedidos")({
   head: () => ({
     meta: [
-      { title: "Meus Pedidos | Digital Store" },
-      { name: "description", content: "Meus Pedidos da Digital Store." },
-      { property: "og:title", content: "Meus Pedidos | Digital Store" },
-      { property: "og:description", content: "Meus Pedidos da Digital Store." },
+      { title: "Meus Pedidos | Loja Mikael Maia" },
+      { name: "description", content: "Meus Pedidos da Loja Mikael Maia." },
+      { property: "og:title", content: "Meus Pedidos | Loja Mikael Maia" },
+      { property: "og:description", content: "Meus Pedidos da Loja Mikael Maia." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

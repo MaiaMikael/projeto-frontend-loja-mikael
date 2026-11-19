@@ -30,4 +30,4 @@ use the editor.
 <!-- LOVABLE:END -->
 
 - Store components live in src/components and product data/filter logic in src/data/products.ts; pages are TanStack routes wrapping content in `<Layout>` (the brief's src/pages maps to src/routes because the router is file-based).
-- Login (Google), carrinho e pedidos ficam em src/lib/store.tsx (StoreProvider no __root), lendo/gravando direto no banco com regras por usuário; why: um só lugar para sessão e carrinho.
+- Cadastro (nome + contato), carrinho e pedidos ficam em src/lib/store.tsx (StoreProvider no __root), salvos no navegador; why: cadastro sem conta externa e um só lugar para sessão e carrinho.

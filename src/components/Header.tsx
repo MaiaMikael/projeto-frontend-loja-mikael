@@ -16,8 +16,8 @@ export function Header() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, profile, cartCount, signIn, signOut } = useStore();
-  const firstName = (profile?.display_name ?? user?.email ?? "").split(" ")[0];
+  const { user, cartCount, signIn, signOut } = useStore();
+  const firstName = (user?.name ?? "").split(" ")[0];
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -54,22 +54,19 @@ export function Header() {
         <div className="ml-auto flex items-center gap-8 lg:ml-0">
           {user ? (
             <div className="hidden items-center gap-3 lg:flex">
-              {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="" referrerPolicy="no-referrer" className="size-9 rounded-full object-cover" />
-              ) : null}
               <span className="max-w-[160px] truncate text-base text-dark-gray-2">Olá, <strong>{firstName}</strong></span>
-              <button type="button" onClick={() => void signOut()} className="text-sm text-dark-gray-3 underline hover:text-primary">
+              <button type="button" onClick={() => signOut()} className="text-sm text-dark-gray-3 underline hover:text-primary">
                 Sair
               </button>
             </div>
           ) : (
             <>
-              <button type="button" onClick={() => void signIn()} className="hidden text-base text-dark-gray-2 underline lg:inline">
+              <button type="button" onClick={() => signIn()} className="hidden text-base text-dark-gray-2 underline lg:inline">
                 Cadastre-se
               </button>
               <button
                 type="button"
-                onClick={() => void signIn()}
+                onClick={() => signIn()}
                 className="hidden h-10 w-[114px] items-center justify-center rounded-sm bg-rubi text-sm font-bold text-primary-foreground transition-colors hover:bg-rubi-deep lg:inline-flex"
               >
                 Entrar
@@ -124,14 +121,14 @@ export function Header() {
             {user ? (
               <>
                 <span className="max-w-[160px] truncate text-base text-dark-gray-2">Olá, <strong>{firstName}</strong></span>
-                <button type="button" onClick={() => void signOut()} className="text-sm text-dark-gray-3 underline">Sair</button>
+                <button type="button" onClick={() => signOut()} className="text-sm text-dark-gray-3 underline">Sair</button>
               </>
             ) : (
               <>
-                <button type="button" onClick={() => void signIn()} className="inline-flex h-10 w-[114px] items-center justify-center rounded-sm bg-rubi text-sm font-bold text-primary-foreground">
+                <button type="button" onClick={() => signIn()} className="inline-flex h-10 w-[114px] items-center justify-center rounded-sm bg-rubi text-sm font-bold text-primary-foreground">
                   Entrar
                 </button>
-                <button type="button" onClick={() => void signIn()} className="text-base text-dark-gray-2 underline">Cadastre-se</button>
+                <button type="button" onClick={() => signIn()} className="text-base text-dark-gray-2 underline">Cadastre-se</button>
               </>
             )}
           </li>

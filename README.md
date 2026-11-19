@@ -1,29 +1,27 @@
-# Welcome to your Lovable project
+# Loja Mikael Maia — Projeto Front End FIEC
 
-This project was built with [Lovable](https://lovable.dev).
+Loja virtual feita em React + TypeScript, com Página Inicial, Listagem de Produtos e Visualização do Produto.
 
-## Build with Lovable
+## Funcionalidades
+- Busca, filtros por marca/categoria/gênero e ordenação por preço
+- Cadastro simples (nome + contato)
+- Carrinho com quantidade, remoção e total
+- Finalizar compra e "Meus Pedidos"
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+## Tecnologias
+React 19, TypeScript, TanStack Router/Start, Tailwind CSS, Vite.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+## Como rodar
+```bash
+bun install      # ou npm install
+bun run dev      # ou npm run dev
+```
+Abra http://localhost:8080.
 
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+## Testes
+```bash
+bunx vitest run
 ```
 
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+## Autor
+Eduardo Mikael Maia — Instagram [@mikaelnexmaia](https://instagram.com/mikaelnexmaia)

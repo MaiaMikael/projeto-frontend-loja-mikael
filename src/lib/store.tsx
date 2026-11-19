@@ -1,9 +1,14 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import type { User } from "@supabase/supabase-js";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { effectivePrice, getProduct } from "@/data/products";
+
+export interface Customer {
+  name: string;
+  contact: string;
+}
 
 export interface CartItem {
   id: string;
@@ -13,20 +18,32 @@ export interface CartItem {
   quantity: number;
 }
 
-interface Profile {
-  display_name: string | null;
-  avatar_url: string | null;
+export interface OrderItem {
+  product_id: string;
+  name: string;
+  image: string;
+  size: string;
+  color: string;
+  quantity: number;
+  price: number;
+}
+
+export interface Order {
+  id: string;
+  total: number;
+  created_at: string;
+  items: OrderItem[];
 }
 
 interface StoreValue {
-  user: User | null;
-  profile: Profile | null;
+  user: Customer | null;
   ready: boolean;
   cart: CartItem[];
+  orders: Order[];
   cartCount: number;
   cartTotal: number;
-  signIn: () => Promise<void>;
-  signOut: () => Promise<void>;
+  signIn: () => void;
+  signOut: () => void;
   addToCart: (p: { productId: string; size: string; color: string; quantity: number }) => Promise<boolean>;
   setQuantity: (id: string, quantity: number) => Promise<void>;
   removeItem: (id: string) => Promise<void>;
@@ -38,18 +55,29 @@ const StoreContext = createContext<StoreValue | null>(null);
 // Used when a screen renders outside the provider (error pages, hot reload): signed-out, empty cart.
 const fallbackStore: StoreValue = {
   user: null,
-  profile: null,
   ready: false,
   cart: [],
+  orders: [],
   cartCount: 0,
   cartTotal: 0,
-  signIn: async () => {},
-  signOut: async () => {},
+  signIn: () => {},
+  signOut: () => {},
   addToCart: async () => false,
   setQuantity: async () => {},
   removeItem: async () => {},
   checkout: async () => false,
 };
+
+const KEY = "loja-mikael-maia";
+
+interface Saved {
+  user: Customer | null;
+  carts: Record<string, CartItem[]>;
+  orders: Record<string, Order[]>;
+}
+
+const accountKey = (c: Customer) => c.contact.trim().toLowerCase();
+const newId = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
 export function cartLineTotal(item: CartItem) {
   const p = getProduct(item.product_id);
@@ -57,118 +85,125 @@ export function cartLineTotal(item: CartItem) {
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [data, setData] = useState<Saved>({ user: null, carts: {}, orders: {} });
   const [ready, setReady] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [contact, setContact] = useState("");
 
-  const loadUserData = useCallback(async (u: User | null) => {
-    if (!u) {
-      setProfile(null);
-      setCart([]);
-      return;
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) setData({ user: null, carts: {}, orders: {}, ...(JSON.parse(raw) as Partial<Saved>) });
+    } catch {
+      /* ignore broken data */
     }
-    const [{ data: prof }, { data: items }] = await Promise.all([
-      supabase.from("profiles").select("display_name, avatar_url").eq("id", u.id).maybeSingle(),
-      supabase.from("cart_items").select("id, product_id, size, color, quantity").order("created_at"),
-    ]);
-    setProfile(
-      prof ?? {
-        display_name: (u.user_metadata?.["full_name"] as string | undefined) ?? u.email ?? null,
-        avatar_url: (u.user_metadata?.["avatar_url"] as string | undefined) ?? null,
-      },
-    );
-    setCart(items ?? []);
+    setReady(true);
   }, []);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED" || event === "INITIAL_SESSION") {
-        const u = session?.user ?? null;
-        setUser(u);
-        setTimeout(() => {
-          void loadUserData(u).finally(() => setReady(true));
-        }, 0);
-      }
-    });
-    return () => sub.subscription.unsubscribe();
-  }, [loadUserData]);
+    if (ready) localStorage.setItem(KEY, JSON.stringify(data));
+  }, [data, ready]);
 
-  const signIn = useCallback(async () => {
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (result.error) toast.error("Não foi possível entrar com o Google. Tente de novo.");
-  }, []);
+  const user = data.user;
+  const key = user ? accountKey(user) : "";
+  const cart = useMemo(() => (key ? data.carts[key] ?? [] : []), [data.carts, key]);
+  const orders = useMemo(() => (key ? data.orders[key] ?? [] : []), [data.orders, key]);
 
-  const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+  const setCart = useCallback(
+    (fn: (prev: CartItem[]) => CartItem[]) =>
+      setData((d) => (d.user ? { ...d, carts: { ...d.carts, [accountKey(d.user)]: fn(d.carts[accountKey(d.user)] ?? []) } } : d)),
+    [],
+  );
+
+  const signIn = useCallback(() => setOpen(true), []);
+  const signOut = useCallback(() => {
+    setData((d) => ({ ...d, user: null }));
     toast.success("Você saiu da sua conta.");
   }, []);
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    const n = name.trim();
+    const c = contact.trim();
+    if (n.length < 2) return void toast.error("Digite seu nome.");
+    if (c.length < 5) return void toast.error("Digite um telefone ou e-mail para contato.");
+    setData((d) => ({ ...d, user: { name: n.slice(0, 60), contact: c.slice(0, 80) } }));
+    setOpen(false);
+    toast.success(`Bem-vindo(a), ${n.split(" ")[0]}!`);
+  };
 
   const addToCart: StoreValue["addToCart"] = useCallback(
     async ({ productId, size, color, quantity }) => {
       if (!user) {
-        toast("Entre com sua conta Google para usar o carrinho.", {
-          action: { label: "Entrar", onClick: () => void signIn() },
-        });
+        toast("Faça seu cadastro para usar o carrinho.");
+        setOpen(true);
         return false;
       }
-      const existing = cart.find((c) => c.product_id === productId && c.size === size && c.color === color);
-      if (existing) {
-        const { data, error } = await supabase
-          .from("cart_items")
-          .update({ quantity: existing.quantity + quantity })
-          .eq("id", existing.id)
-          .select("id, product_id, size, color, quantity")
-          .single();
-        if (error || !data) return toast.error("Não foi possível adicionar."), false;
-        setCart((prev) => prev.map((c) => (c.id === data.id ? data : c)));
-      } else {
-        const { data, error } = await supabase
-          .from("cart_items")
-          .insert({ user_id: user.id, product_id: productId, size, color, quantity })
-          .select("id, product_id, size, color, quantity")
-          .single();
-        if (error || !data) return toast.error("Não foi possível adicionar."), false;
-        setCart((prev) => [...prev, data]);
-      }
+      setCart((prev) => {
+        const existing = prev.find((c) => c.product_id === productId && c.size === size && c.color === color);
+        return existing
+          ? prev.map((c) => (c === existing ? { ...c, quantity: c.quantity + quantity } : c))
+          : [...prev, { id: newId(), product_id: productId, size, color, quantity }];
+      });
       toast.success("Produto adicionado ao carrinho!");
       return true;
     },
-    [user, cart, signIn],
+    [user, setCart],
   );
 
-  const setQuantity = useCallback(async (id: string, quantity: number) => {
-    if (quantity < 1) return;
-    setCart((prev) => prev.map((c) => (c.id === id ? { ...c, quantity } : c)));
-    const { error } = await supabase.from("cart_items").update({ quantity }).eq("id", id);
-    if (error) toast.error("Não foi possível atualizar a quantidade.");
-  }, []);
+  const setQuantity = useCallback(
+    async (id: string, quantity: number) => {
+      if (quantity >= 1) setCart((prev) => prev.map((c) => (c.id === id ? { ...c, quantity } : c)));
+    },
+    [setCart],
+  );
 
-  const removeItem = useCallback(async (id: string) => {
-    setCart((prev) => prev.filter((c) => c.id !== id));
-    const { error } = await supabase.from("cart_items").delete().eq("id", id);
-    if (error) toast.error("Não foi possível remover o item.");
-  }, []);
+  const removeItem = useCallback(async (id: string) => setCart((prev) => prev.filter((c) => c.id !== id)), [setCart]);
 
   const cartTotal = useMemo(() => cart.reduce((s, c) => s + cartLineTotal(c), 0), [cart]);
   const cartCount = useMemo(() => cart.reduce((s, c) => s + c.quantity, 0), [cart]);
 
   const checkout = useCallback(async () => {
     if (!user || cart.length === 0) return false;
-    const items = cart.map((c) => {
+    const items: OrderItem[] = cart.map((c) => {
       const p = getProduct(c.product_id);
       return { product_id: c.product_id, name: p?.name ?? "", image: p?.image ?? "", size: c.size, color: c.color, quantity: c.quantity, price: p ? effectivePrice(p) : 0 };
     });
-    const { error } = await supabase.from("orders").insert({ user_id: user.id, total: Number(cartTotal.toFixed(2)), items });
-    if (error) return toast.error("Não foi possível finalizar a compra."), false;
-    await supabase.from("cart_items").delete().eq("user_id", user.id);
-    setCart([]);
+    const order: Order = { id: newId(), total: Number(cartTotal.toFixed(2)), created_at: new Date().toISOString(), items };
+    const k = accountKey(user);
+    setData((d) => ({ ...d, carts: { ...d.carts, [k]: [] }, orders: { ...d.orders, [k]: [order, ...(d.orders[k] ?? [])] } }));
     toast.success("Pedido realizado com sucesso!");
     return true;
   }, [user, cart, cartTotal]);
 
-  const value = { user, profile, ready, cart, cartCount, cartTotal, signIn, signOut, addToCart, setQuantity, removeItem, checkout };
-  return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
+  const value = { user, ready, cart, orders, cartCount, cartTotal, signIn, signOut, addToCart, setQuantity, removeItem, checkout };
+  return (
+    <StoreContext.Provider value={value}>
+      {children}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Cadastre-se</DialogTitle>
+            <DialogDescription>Só precisamos do seu nome e de um contato.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submit} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="cad-nome">Nome</Label>
+              <Input id="cad-nome" value={name} maxLength={60} onChange={(e) => setName(e.target.value)} placeholder="Seu nome" autoComplete="name" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="cad-contato">Contato (telefone ou e-mail)</Label>
+              <Input id="cad-contato" value={contact} maxLength={80} onChange={(e) => setContact(e.target.value)} placeholder="(85) 99999-9999" />
+            </div>
+            <button type="submit" className="h-11 rounded-lg bg-rubi font-bold text-primary-foreground hover:bg-rubi-deep">
+              Pronto
+            </button>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </StoreContext.Provider>
+  );
 }
 
 export function useStore() {

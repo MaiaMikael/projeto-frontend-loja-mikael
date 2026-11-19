@@ -39,7 +39,7 @@ function CartPage() {
         {!ready ? (
           <p className="text-dark-gray-3">Carregando...</p>
         ) : !user ? (
-          <SignInPrompt message="Entre com sua conta Google para ver e salvar seu carrinho." />
+          <SignInPrompt message="Faça seu cadastro para ver e salvar seu carrinho." />
         ) : cart.length === 0 ? (
           <div className="rounded-lg bg-background p-10 text-center">
             <p className="text-dark-gray-3">Seu carrinho está vazio.</p>

@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout } from "@/components/Layout";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useStore } from "@/lib/store";
-import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/data/products";
 
 export const Route = createFileRoute("/pedidos")({
@@ -20,22 +18,8 @@ export const Route = createFileRoute("/pedidos")({
   component: Page,
 });
 
-interface OrderItem { product_id: string; name: string; image: string; size: string; color: string; quantity: number; price: number }
-interface Order { id: string; total: number; created_at: string; items: OrderItem[] }
-
 function Page() {
-  const { user, ready } = useStore();
-  const [orders, setOrders] = useState<Order[] | null>(null);
-
-  useEffect(() => {
-    if (!user) return setOrders(null);
-    void supabase
-      .from("orders")
-      .select("id, total, created_at, items")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => setOrders((data ?? []) as unknown as Order[]));
-  }, [user]);
-
+  const { user, ready, orders } = useStore();
   return (
     <Layout>
       <div className="container-store py-10">
@@ -43,9 +27,7 @@ function Page() {
         {!ready ? (
           <p className="text-dark-gray-3">Carregando...</p>
         ) : !user ? (
-          <SignInPrompt message="Entre com sua conta Google para ver seus pedidos." />
-        ) : orders === null ? (
-          <p className="text-dark-gray-3">Carregando...</p>
+          <SignInPrompt message="Faça seu cadastro para ver seus pedidos." />
         ) : orders.length === 0 ? (
           <div className="rounded-lg bg-background p-10 text-center">
             <p className="text-dark-gray-3">Você ainda não fez nenhum pedido.</p>

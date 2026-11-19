@@ -11,9 +11,14 @@ interface BuyBoxProps {
   priceDiscount?: number | undefined;
   description: string;
   children?: ReactNode | undefined;
+  quantity: number;
+  onQuantityChange: (q: number) => void;
+  onAddToCart: () => void;
+  onBuy: () => void;
+  busy?: boolean | undefined;
 }
 
-export function BuyBox({ name, reference, stars, rating, price, priceDiscount, description, children }: BuyBoxProps) {
+export function BuyBox({ name, reference, stars, rating, price, priceDiscount, description, children, quantity, onQuantityChange, onAddToCart, onBuy, busy }: BuyBoxProps) {
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -42,12 +47,32 @@ export function BuyBox({ name, reference, stars, rating, price, priceDiscount, d
         <p className="text-sm leading-relaxed text-dark-gray-2">{description}</p>
       </div>
       {children}
-      <button
-        type="button"
-        className="mt-2 h-12 w-full rounded-lg bg-rubi text-base font-bold text-primary-foreground transition hover:bg-rubi-deep sm:w-[220px]"
-      >
-        COMPRAR
-      </button>
+      <div>
+        <h2 className="mb-2 text-sm font-bold text-light-gray">Quantidade</h2>
+        <div className="inline-flex items-center rounded-sm border border-light-gray-2">
+          <button type="button" aria-label="Diminuir quantidade" onClick={() => onQuantityChange(Math.max(1, quantity - 1))} className="size-10 text-xl text-dark-gray-2 hover:text-primary">−</button>
+          <span aria-live="polite" className="w-10 text-center text-base font-bold text-dark-gray-2">{quantity}</span>
+          <button type="button" aria-label="Aumentar quantidade" onClick={() => onQuantityChange(Math.min(99, quantity + 1))} className="size-10 text-xl text-dark-gray-2 hover:text-primary">+</button>
+        </div>
+      </div>
+      <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+        <button
+          type="button"
+          disabled={busy}
+          onClick={onBuy}
+          className="h-12 w-full rounded-lg bg-rubi text-base font-bold text-primary-foreground transition hover:bg-rubi-deep disabled:opacity-60 sm:w-[220px]"
+        >
+          COMPRAR
+        </button>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={onAddToCart}
+          className="h-12 w-full rounded-lg border-2 border-primary text-base font-bold text-primary transition hover:bg-primary/5 disabled:opacity-60 sm:w-[220px]"
+        >
+          ADICIONAR AO CARRINHO
+        </button>
+      </div>
     </div>
   );
 }

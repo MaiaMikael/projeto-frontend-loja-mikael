@@ -1,13 +1,18 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout } from "@/components/Layout";
+import { SignInPrompt } from "@/components/SignInPrompt";
+import { useStore } from "@/lib/store";
+import { supabase } from "@/integrations/supabase/client";
+import { formatPrice } from "@/data/products";
 
 export const Route = createFileRoute("/pedidos")({
   head: () => ({
     meta: [
       { title: "Meus Pedidos | Loja Mikael Maia" },
-      { name: "description", content: "Meus Pedidos da Loja Mikael Maia." },
+      { name: "description", content: "Acompanhe seus pedidos na Loja Mikael Maia." },
       { property: "og:title", content: "Meus Pedidos | Loja Mikael Maia" },
-      { property: "og:description", content: "Meus Pedidos da Loja Mikael Maia." },
+      { property: "og:description", content: "Acompanhe seus pedidos na Loja Mikael Maia." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -15,15 +20,60 @@ export const Route = createFileRoute("/pedidos")({
   component: Page,
 });
 
+interface OrderItem { product_id: string; name: string; image: string; size: string; color: string; quantity: number; price: number }
+interface Order { id: string; total: number; created_at: string; items: OrderItem[] }
+
 function Page() {
+  const { user, ready } = useStore();
+  const [orders, setOrders] = useState<Order[] | null>(null);
+
+  useEffect(() => {
+    if (!user) return setOrders(null);
+    void supabase
+      .from("orders")
+      .select("id, total, created_at, items")
+      .order("created_at", { ascending: false })
+      .then(({ data }) => setOrders((data ?? []) as unknown as Order[]));
+  }, [user]);
+
   return (
     <Layout>
-      <div className="container-store py-24 text-center">
-        <h1 className="text-3xl font-bold text-dark-gray">Meus Pedidos</h1>
-        <p className="mt-3 text-dark-gray-3">Esta página estará disponível em breve.</p>
-        <Link to="/products" className="mt-6 inline-flex h-10 items-center rounded-sm bg-rubi px-6 text-sm font-bold text-primary-foreground">
-          Ver produtos
-        </Link>
+      <div className="container-store py-10">
+        <h1 className="mb-8 text-2xl font-bold text-dark-gray-2">Meus Pedidos</h1>
+        {!ready ? (
+          <p className="text-dark-gray-3">Carregando...</p>
+        ) : !user ? (
+          <SignInPrompt message="Entre com sua conta Google para ver seus pedidos." />
+        ) : orders === null ? (
+          <p className="text-dark-gray-3">Carregando...</p>
+        ) : orders.length === 0 ? (
+          <div className="rounded-lg bg-background p-10 text-center">
+            <p className="text-dark-gray-3">Você ainda não fez nenhum pedido.</p>
+            <Link to="/products" className="mt-6 inline-flex h-10 items-center rounded-sm bg-rubi px-6 text-sm font-bold text-primary-foreground">Ver produtos</Link>
+          </div>
+        ) : (
+          <ul className="flex flex-col gap-6">
+            {orders.map((o) => (
+              <li key={o.id} className="rounded-lg bg-background p-6">
+                <div className="mb-4 flex flex-wrap justify-between gap-2 border-b pb-3 text-sm text-dark-gray-3">
+                  <span>Pedido nº <strong className="text-dark-gray-2">{o.id.slice(0, 8).toUpperCase()}</strong></span>
+                  <span>{new Date(o.created_at).toLocaleString("pt-BR")}</span>
+                  <span className="font-bold text-primary">Confirmado</span>
+                </div>
+                <ul className="flex flex-col gap-3">
+                  {o.items.map((it, i) => (
+                    <li key={i} className="flex items-center gap-4">
+                      <img src={it.image} alt="" className="size-14 rounded-sm bg-light-gray-3 object-contain" />
+                      <span className="flex-1 text-dark-gray-2">{it.name} <span className="text-sm text-dark-gray-3">· Tam. {it.size} · {it.quantity}x</span></span>
+                      <span className="text-dark-gray-2">{formatPrice(it.price * it.quantity)}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-4 text-right text-lg font-bold text-dark-gray-2">Total: {formatPrice(Number(o.total))}</div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </Layout>
   );

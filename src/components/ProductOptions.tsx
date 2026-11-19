@@ -5,9 +5,10 @@ interface ProductOptionsProps {
   radius?: string | undefined;
   shape: "square" | "circle";
   type: "text" | "color";
+  onChange?: ((value: string) => void) | undefined;
 }
 
-export function ProductOptions({ options, radius = "4px", shape, type }: ProductOptionsProps) {
+export function ProductOptions({ options, radius = "4px", shape, type, onChange }: ProductOptionsProps) {
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
@@ -21,7 +22,10 @@ export function ProductOptions({ options, radius = "4px", shape, type }: Product
             type="button"
             aria-pressed={active}
             aria-label={type === "color" ? `Cor ${opt}` : `Tamanho ${opt}`}
-            onClick={() => setSelected(opt)}
+            onClick={() => {
+              setSelected(opt);
+              onChange?.(opt);
+            }}
             className={`${sizeCls} flex items-center justify-center transition ${
               active ? "border-2 border-primary" : shape === "square" ? "border border-light-gray-2" : "border-2 border-transparent"
             } ${type === "text" ? "text-2xl text-dark-gray-2" : ""} ${type === "text" && active ? "bg-primary text-primary-foreground" : "bg-background"}`}

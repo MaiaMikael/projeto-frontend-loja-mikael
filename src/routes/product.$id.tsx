@@ -1,10 +1,13 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { Layout } from "@/components/Layout";
 import { Gallery } from "@/components/Gallery";
 import { BuyBox } from "@/components/BuyBox";
 import { ProductOptions } from "@/components/ProductOptions";
 import { Section } from "@/components/Section";
 import { ProductListing } from "@/components/ProductListing";
+import { useStore } from "@/lib/store";
 import { getProduct, productImages, products } from "@/data/products";
 
 export const Route = createFileRoute("/product/$id")({
@@ -39,6 +42,21 @@ export const Route = createFileRoute("/product/$id")({
 function ProductViewPage() {
   const { product } = Route.useLoaderData();
   const related = products.filter((p) => p.id !== product.id).slice(0, 4);
+  const { addToCart } = useStore();
+  const navigate = useNavigate();
+  const [size, setSize] = useState("");
+  const [color, setColor] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [busy, setBusy] = useState(false);
+
+  const add = async (goToCart: boolean) => {
+    if (!size) return void toast.error("Escolha um tamanho.");
+    if (!color) return void toast.error("Escolha uma cor.");
+    setBusy(true);
+    const ok = await addToCart({ productId: product.id, size, color, quantity });
+    setBusy(false);
+    if (ok && goToCart) void navigate({ to: "/carrinho" });
+  };
 
   return (
     <Layout>
@@ -59,14 +77,19 @@ function ProductViewPage() {
               price={product.price}
               priceDiscount={product.priceDiscount}
               description={product.description}
+              quantity={quantity}
+              onQuantityChange={setQuantity}
+              onAddToCart={() => void add(false)}
+              onBuy={() => void add(true)}
+              busy={busy}
             >
               <div>
                 <h2 className="mb-2 text-sm font-bold text-light-gray">Tamanho</h2>
-                <ProductOptions options={["39", "40", "41", "42", "43"]} shape="square" radius="4px" type="text" />
+                <ProductOptions options={["39", "40", "41", "42", "43"]} shape="square" radius="4px" type="text" onChange={setSize} />
               </div>
               <div>
                 <h2 className="mb-2 text-sm font-bold text-light-gray">Cor</h2>
-                <ProductOptions options={["#6FEEFF", "#FF6969", "#5E5E5E", "#6D70B7"]} shape="circle" type="color" />
+                <ProductOptions options={["#6FEEFF", "#FF6969", "#5E5E5E", "#6D70B7"]} shape="circle" type="color" onChange={setColor} />
               </div>
             </BuyBox>
           </div>

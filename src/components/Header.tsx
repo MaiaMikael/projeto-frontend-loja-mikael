@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu, Search, X } from "lucide-react";
 import { Logo } from "./Logo";
+import { useStore } from "@/lib/store";
 import miniCart from "@/assets/icons/mini-cart.svg";
 
 const navLinks = [
@@ -15,6 +16,8 @@ export function Header() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, profile, cartCount, signIn, signOut } = useStore();
+  const firstName = (profile?.display_name ?? user?.email ?? "").split(" ")[0];
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -49,21 +52,38 @@ export function Header() {
           </div>
         </form>
         <div className="ml-auto flex items-center gap-8 lg:ml-0">
-          <a href="#" className="hidden text-base text-dark-gray-2 underline lg:inline">
-            Cadastre-se
-          </a>
-          <a
-            href="#"
-            className="hidden h-10 w-[114px] items-center justify-center rounded-sm bg-rubi text-sm font-bold text-primary-foreground transition-colors hover:bg-rubi-deep lg:inline-flex"
-          >
-            Entrar
-          </a>
-          <button type="button" className="relative" aria-label="Carrinho com 2 itens">
+          {user ? (
+            <div className="hidden items-center gap-3 lg:flex">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="" referrerPolicy="no-referrer" className="size-9 rounded-full object-cover" />
+              ) : null}
+              <span className="text-base text-dark-gray-2">Olá, <strong>{firstName}</strong></span>
+              <button type="button" onClick={() => void signOut()} className="text-sm text-dark-gray-3 underline hover:text-primary">
+                Sair
+              </button>
+            </div>
+          ) : (
+            <>
+              <button type="button" onClick={() => void signIn()} className="hidden text-base text-dark-gray-2 underline lg:inline">
+                Cadastre-se
+              </button>
+              <button
+                type="button"
+                onClick={() => void signIn()}
+                className="hidden h-10 w-[114px] items-center justify-center rounded-sm bg-rubi text-sm font-bold text-primary-foreground transition-colors hover:bg-rubi-deep lg:inline-flex"
+              >
+                Entrar
+              </button>
+            </>
+          )}
+          <Link to="/carrinho" className="relative" aria-label={`Carrinho com ${cartCount} itens`}>
             <img src={miniCart} alt="" className="size-6" />
-            <span className="absolute -top-2 -right-2 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-              2
-            </span>
-          </button>
+            {cartCount > 0 ? (
+              <span className="absolute -top-2 -right-2 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            ) : null}
+          </Link>
         </div>
       </div>
 
@@ -100,11 +120,20 @@ export function Header() {
               </Link>
             </li>
           ))}
-          <li className="flex gap-4 border-t pt-4 lg:hidden">
-            <a href="#" className="inline-flex h-10 w-[114px] items-center justify-center rounded-sm bg-rubi text-sm font-bold text-primary-foreground">
-              Entrar
-            </a>
-            <a href="#" className="self-center text-base text-dark-gray-2 underline">Cadastre-se</a>
+          <li className="flex items-center gap-4 border-t pt-4 lg:hidden">
+            {user ? (
+              <>
+                <span className="text-base text-dark-gray-2">Olá, <strong>{firstName}</strong></span>
+                <button type="button" onClick={() => void signOut()} className="text-sm text-dark-gray-3 underline">Sair</button>
+              </>
+            ) : (
+              <>
+                <button type="button" onClick={() => void signIn()} className="inline-flex h-10 w-[114px] items-center justify-center rounded-sm bg-rubi text-sm font-bold text-primary-foreground">
+                  Entrar
+                </button>
+                <button type="button" onClick={() => void signIn()} className="text-base text-dark-gray-2 underline">Cadastre-se</button>
+              </>
+            )}
           </li>
         </ul>
       </nav>

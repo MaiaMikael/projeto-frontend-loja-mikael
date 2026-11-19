@@ -1,12 +1,13 @@
 import { Logo } from "./Logo";
 import { Information } from "./Information";
+import { InstagramLink } from "./InstagramLink";
 import facebook from "@/assets/icons/facebook.svg";
 import instagram from "@/assets/icons/instagram.svg";
 import twitter from "@/assets/icons/twitter.svg";
 
 const socials = [
   { href: "https://facebook.com", icon: facebook, label: "Facebook" },
-  { href: "https://instagram.com", icon: instagram, label: "Instagram" },
+  { href: "https://instagram.com/mikaelnexmaia", icon: instagram, label: "Instagram" },
   { href: "https://twitter.com", icon: twitter, label: "Twitter" },
 ];
 
@@ -58,7 +59,10 @@ export function Footer() {
       </div>
       <div className="container-store">
         <hr className="border-dark-gray-2" />
-        <p className="py-8 text-center text-xs">© {new Date().getFullYear()} Loja Mikael Maia · Projeto Front End FIEC</p>
+        <div className="flex flex-col items-center gap-4 py-8">
+          <p className="text-center text-xs">© {new Date().getFullYear()} Loja Mikael Maia · Projeto Front End FIEC</p>
+          <InstagramLink />
+        </div>
       </div>
     </footer>
   );

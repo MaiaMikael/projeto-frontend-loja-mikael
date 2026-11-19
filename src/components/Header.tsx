@@ -57,7 +57,7 @@ export function Header() {
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="" referrerPolicy="no-referrer" className="size-9 rounded-full object-cover" />
               ) : null}
-              <span className="text-base text-dark-gray-2">Olá, <strong>{firstName}</strong></span>
+              <span className="max-w-[160px] truncate text-base text-dark-gray-2">Olá, <strong>{firstName}</strong></span>
               <button type="button" onClick={() => void signOut()} className="text-sm text-dark-gray-3 underline hover:text-primary">
                 Sair
               </button>
@@ -123,7 +123,7 @@ export function Header() {
           <li className="flex items-center gap-4 border-t pt-4 lg:hidden">
             {user ? (
               <>
-                <span className="text-base text-dark-gray-2">Olá, <strong>{firstName}</strong></span>
+                <span className="max-w-[160px] truncate text-base text-dark-gray-2">Olá, <strong>{firstName}</strong></span>
                 <button type="button" onClick={() => void signOut()} className="text-sm text-dark-gray-3 underline">Sair</button>
               </>
             ) : (

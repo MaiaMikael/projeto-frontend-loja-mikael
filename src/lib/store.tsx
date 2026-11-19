@@ -35,6 +35,22 @@ interface StoreValue {
 
 const StoreContext = createContext<StoreValue | null>(null);
 
+// Used when a screen renders outside the provider (error pages, hot reload): signed-out, empty cart.
+const fallbackStore: StoreValue = {
+  user: null,
+  profile: null,
+  ready: false,
+  cart: [],
+  cartCount: 0,
+  cartTotal: 0,
+  signIn: async () => {},
+  signOut: async () => {},
+  addToCart: async () => false,
+  setQuantity: async () => {},
+  removeItem: async () => {},
+  checkout: async () => false,
+};
+
 export function cartLineTotal(item: CartItem) {
   const p = getProduct(item.product_id);
   return p ? effectivePrice(p) * item.quantity : 0;
@@ -157,6 +173,5 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
 export function useStore() {
   const ctx = useContext(StoreContext);
-  if (!ctx) throw new Error("useStore must be used inside StoreProvider");
-  return ctx;
+  return ctx ?? fallbackStore;
 }
